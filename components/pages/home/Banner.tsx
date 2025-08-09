@@ -25,9 +25,10 @@ const Banner = async () => {
               <CarouselItem key={index}>
                 <div className="relative w-full aspect-[16/9] md:aspect-[21/9]">
                   {item?.image && (
-                    <img
+                    <Image
                       src={urlFor(item?.image).url()}
                       alt={`Banner ${index + 1}`}
+                      fill
                       className="object-cover"
                       priority={index === 0}
                     />
@@ -49,7 +50,7 @@ const Banner = async () => {
             src={smallBanner}
             alt="SmallBanner"
             sizes="(max-width: 768) 100vw, 25vw"
-            priority
+            priority={true}
             fill
             className="object-cover rounded-md"
           />

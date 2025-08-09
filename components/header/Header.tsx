@@ -10,7 +10,7 @@ import MobileMenu from "./MobileMenu";
 
 function Header() {
   return (
-    <header className="sticky top-0 py-5 bg-tech_bg_dark text-tech_bg_white/80 backdrop:blur-md">
+    <header className="sticky top-0 z-40 py-2 bg-tech_bg_dark text-tech_bg_white/80 backdrop-blur-md">
       <Container className="flex items-center justify-between gap-5">
         <div className="flex items-center justify-start gap-2.5  lg:gap-0">
           <MobileMenu />
