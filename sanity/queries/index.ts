@@ -1,5 +1,5 @@
 import { sanityFetch } from "../lib/live";
-import { BANNER_QUERY } from "./query";
+import { BANNER_QUERY, FEATURED_PRODUCTS } from "./query";
 
 const getBanner = async () => {
   try {
@@ -7,6 +7,7 @@ const getBanner = async () => {
     return data ?? [];
   } catch (error) {
     console.error("Error fetching Banners Data", error);
+    return [];
   }
 };
 
@@ -30,4 +31,27 @@ const getCategories = async (quantity?: number) => {
   }
 };
 
-export { getBanner, getCategories };
+const getFeaturedProducts = async () => {
+  try {
+    const { data } = await sanityFetch({ query: FEATURED_PRODUCTS });
+    console.log("Raw Sanity response:", { data });
+    return data ?? [];
+  } catch (error) {
+    console.error("Error fetching featured Products Data", error);
+    return [];
+  }
+};
+
+// Temporary test function - get all products
+const getAllProducts = async () => {
+  try {
+    const { data } = await sanityFetch({ query: ALL_PRODUCTS });
+    console.log("All products response:", { data });
+    return data ?? [];
+  } catch (error) {
+    console.error("Error fetching all Products Data", error);
+    return [];
+  }
+};
+
+export { getBanner, getCategories, getFeaturedProducts, getAllProducts };

@@ -103,13 +103,14 @@ export const productType = defineType({
       title: "name",
       media: "images",
       subtitle: "price",
+      isFeatured: "isFeatured",
     },
     prepare(selection) {
-      const { title, subtitle, media } = selection;
+      const { title, subtitle, media, isFeatured } = selection;
       const image = media && media[0];
       return {
         title: title,
-        subtitle: `$${subtitle}`,
+        subtitle: `${isFeatured ? "(Featured)" : ""} $${subtitle}`,
         media: image,
       };
     },

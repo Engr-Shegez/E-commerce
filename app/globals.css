@@ -19,6 +19,9 @@
   --color-tech_bg_dark_color: #151515;
   --color-tech_bg_dark_red: #f02757;
   --color-tech_bg_light_color: #52525b;
+  --color-tech_bg_teal: #14b8a6; /* Tailwind teal-500 */
+  --color-tech_bg_green: #16a34a; /* Tailwind green-600 */
+  --color-tech_bg_gold: #ffd700; /* True gold */
 
   /* customm color end */
   --color-background: var(--background);

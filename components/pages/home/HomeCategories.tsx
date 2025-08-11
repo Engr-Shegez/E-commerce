@@ -42,9 +42,9 @@ const HomeCategories = ({ categories }: Props) => {
         {data?.map((item) => (
           <div
             key={item?.title}
-            className="flex items-center justify-center md:justify-baseline gap-3 md:gap-5 bg-white rounded-md border border-tech_bg_orange/20 hover:border-tech_bg_orange hoverEffect p-3"
+            className="flex items-center justify-center md:justify-baseline gap-3 md:gap-5 bg-white rounded-md border border-tech_bg_green/20 hover:border-tech_bg_green hoverEffect p-3"
           >
-            <span className="bg-tech_bg_orange text-white p-2 rounded-full">
+            <span className="bg-tech_bg_green text-white p-2 rounded-full">
               {item?.icon}
             </span>
             <div>
@@ -65,22 +65,30 @@ const HomeCategories = ({ categories }: Props) => {
         <Title>Featured Categories</Title>
         <p>Get Your Desired Products From Featured Category!</p>
       </div>
-      <div>
+      <div className="mt-5 grid grid-cols-4 md:grid-cols-8 gap-2.5">
         {categories?.map((category) => (
-          <div key={category?._id}>
+          <div
+            key={category?._id}
+            className="bg-white p-5 flex flex-col items-center gap-3 rounded-lg border border-transparent hover:border-tech_bg_green hoverEffect relative"
+          >
             {category?.image && (
-              <div className="w-10 h-10 md:w-12 md:h-12">
-                <Link href={`/category/${category?.slug?.current}`}>
-                  <Image
-                    src={urlFor(category?.image).url()}
-                    alt="categoryImage"
-                    width={500}
-                    height={500}
-                    className="w-full h-full"
-                  />
-                </Link>
+              <div className="w-10 h-10 md:w-12 md:h-12 overflow-hidden">
+                <Image
+                  src={urlFor(category?.image).url()}
+                  alt="categoryImage"
+                  width={500}
+                  height={500}
+                  className="w-full h-full"
+                />
               </div>
             )}
+            <p className="text-xs md:text-sm font-semibold text-center line-clamp-1">
+              {category?.title}
+            </p>
+            <Link
+              href={`/category/${category?.slug?.current}`}
+              className="absolute inset-1"
+            />
           </div>
         ))}
       </div>
