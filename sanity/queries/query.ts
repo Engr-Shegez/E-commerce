@@ -9,4 +9,6 @@ const FEATURED_PRODUCTS = defineQuery(
   `*[_type == "product"] | order(name asc) {...,"categories": categories[]->title}`
 );
 
-export { BANNER_QUERY, FEATURED_PRODUCTS };
+const BRANDS_QUERY = defineQuery(`*[_type == "brand"] | order(name asc)`);
+
+export { BANNER_QUERY, FEATURED_PRODUCTS, BRANDS_QUERY };

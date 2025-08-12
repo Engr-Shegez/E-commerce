@@ -4,6 +4,7 @@ import Link from "next/link";
 import React from "react";
 import Title from "./Title";
 import PriceView from "./PriceView";
+import AddToCartButton from "./AddToCartButton";
 
 const ProductCard = ({ product }: { product: Product }) => {
   return (
@@ -51,6 +52,7 @@ const ProductCard = ({ product }: { product: Product }) => {
           discount={product?.discount}
           className="text-sm"
         />
+        <AddToCartButton product={product} className="w-36 rounded-full" />
       </div>
     </div>
   );

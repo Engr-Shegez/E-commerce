@@ -1,5 +1,5 @@
 import { sanityFetch } from "../lib/live";
-import { BANNER_QUERY, FEATURED_PRODUCTS } from "./query";
+import { BANNER_QUERY, BRANDS_QUERY, FEATURED_PRODUCTS } from "./query";
 
 const getBanner = async () => {
   try {
@@ -45,8 +45,7 @@ const getFeaturedProducts = async () => {
 // Temporary test function - get all products
 const getAllProducts = async () => {
   try {
-    const { data } = await sanityFetch({ query: ALL_PRODUCTS });
-    console.log("All products response:", { data });
+    const { data } = await sanityFetch({ query: FEATURED_PRODUCTS });
     return data ?? [];
   } catch (error) {
     console.error("Error fetching all Products Data", error);
@@ -54,4 +53,20 @@ const getAllProducts = async () => {
   }
 };
 
-export { getBanner, getCategories, getFeaturedProducts, getAllProducts };
+const getAllBrands = async () => {
+  try {
+    const { data } = await sanityFetch({ query: BRANDS_QUERY });
+    return data ?? [];
+  } catch (error) {
+    console.error("Error fetching all Brands Data", error);
+    return [];
+  }
+};
+
+export {
+  getBanner,
+  getCategories,
+  getFeaturedProducts,
+  getAllProducts,
+  getAllBrands,
+};

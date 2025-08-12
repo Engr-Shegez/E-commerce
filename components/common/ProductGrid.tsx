@@ -4,18 +4,13 @@ import React from "react";
 import Title from "./Title";
 import ProductCard from "./ProductCard";
 import { Product } from "@/sanity.types";
-// import { Product } from "@/sanity.types";
-
-// interface Props {
-//   product: Product[];
-// }
 
 const ProductGrid = async () => {
   const products = await getFeaturedProducts();
   return (
     <Container>
       <div className="text-center">
-        <Title className="text-lg font-bold">Featured Products</Title>
+        <Title className="text-2xl font-bold">Featured Products</Title>
         <p className="text-sm font--medium">
           Check & Get Your Desired Products
         </p>
