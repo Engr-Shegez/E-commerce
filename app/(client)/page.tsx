@@ -1,8 +1,9 @@
 import ProductGrid from "@/components/common/ProductGrid";
 import Banner from "@/components/pages/home/Banner";
 import HomeCategories from "@/components/pages/home/HomeCategories";
-import ShopByBrands from "@/components/pages/home/ShopByBrands";
 import { getCategories } from "@/sanity/queries";
+import ExploreBrands from "@/components/pages/home/ExploreBrands";
+import RecentlyPublished from "@/components/pages/home/RecentlyPublished";
 
 export default async function Home() {
   const categories = await getCategories();
@@ -13,9 +14,8 @@ export default async function Home() {
       <HomeCategories categories={categories} />
       <div className="py-10">
         <ProductGrid />
-        <ShopByBrands />
-        {/* {ShopByBrands} */}
-        {/* LatestBlocks */}
+        <ExploreBrands />
+        <RecentlyPublished />
       </div>
     </div>
   );

@@ -1,5 +1,6 @@
 import Header from "@/components/header/Header";
 import Footer from "@/components/common/Footer";
+import CartMenu from "@/components/common/CartMenu";
 
 export default function RootLayout({
   children,
@@ -8,6 +9,7 @@ export default function RootLayout({
     <>
       <Header />
       {children}
+      <CartMenu />
       <Footer />
     </>
   );

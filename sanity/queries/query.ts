@@ -11,4 +11,14 @@ const FEATURED_PRODUCTS = defineQuery(
 
 const BRANDS_QUERY = defineQuery(`*[_type == "brand"] | order(name asc)`);
 
-export { BANNER_QUERY, FEATURED_PRODUCTS, BRANDS_QUERY };
+const RECENTLY_PUBLISHED_QUERY = defineQuery(
+  `*[_type == "blog" && isLatest == true] | order(name asc){..., blogcategories[]->{
+  title}}`
+);
+
+export {
+  BANNER_QUERY,
+  FEATURED_PRODUCTS,
+  BRANDS_QUERY,
+  RECENTLY_PUBLISHED_QUERY,
+};

@@ -3,7 +3,7 @@ import Title from "@/components/common/Title";
 import { Brand } from "@/sanity.types";
 import { urlFor } from "@/sanity/lib/image";
 import { getAllBrands } from "@/sanity/queries";
-import { Description } from "@radix-ui/react-dialog";
+
 import { GitCompareArrows, Headset, ShieldCheck, Truck } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -32,7 +32,7 @@ const extraData = [
   },
 ];
 
-const ShopByBrands = async () => {
+const ExploreBrands = async () => {
   const brands = await getAllBrands();
 
   return (
@@ -88,4 +88,4 @@ const ShopByBrands = async () => {
   );
 };
 
-export default ShopByBrands;
+export default ExploreBrands;
