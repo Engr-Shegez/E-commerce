@@ -3,6 +3,7 @@ import {
   BANNER_QUERY,
   BRANDS_QUERY,
   FEATURED_PRODUCTS,
+  PRODUCT_BY_SLUG_QUERY,
   RECENTLY_PUBLISHED_QUERY,
 } from "./query";
 
@@ -78,6 +79,19 @@ const getRecentlyPublished = async () => {
   }
 };
 
+const getProductBySlug = async (slug: string) => {
+  try {
+    const product = await sanityFetch({
+      query: PRODUCT_BY_SLUG_QUERY,
+      params: { slug },
+    });
+    return product?.data || null;
+  } catch (error) {
+    console.error("Error fetching product by ID", error);
+    return null;
+  }
+};
+
 export {
   getBanner,
   getCategories,
@@ -85,4 +99,5 @@ export {
   getAllProducts,
   getAllBrands,
   getRecentlyPublished,
+  getProductBySlug,
 };

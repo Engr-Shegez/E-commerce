@@ -89,3 +89,26 @@ const SocialMedia = ({ className, iconClassName, tooltipClassName }: Props) => {
 };
 
 export default SocialMedia;
+
+// const Products = ({ products }: ProductsProps) => {
+//   return (
+//     <div className="products-container">
+//       {products?.map((product) => (
+//         <div key={product._id} className="product-item">
+//           <h3>{product.name}</h3>
+//           <p>${product.price}</p>
+//           {product.discount > 0 && (
+//             <p className="discount">-${product.discount} off</p>
+//           )}
+//           {product.images && product.images.length > 0 && (
+//             <img src={product.images[0]} alt={product.name} />
+//           )}
+//           {product.status && (
+//             <span className={`status ${product.status}`}>{product.status}</span>
+//           )}
+//           {product.isFeatured && <span className="featured">Featured</span>}
+//         </div>
+//       ))}
+//     </div>
+//   );
+// };

@@ -36,7 +36,7 @@ const ExploreBrands = async () => {
   const brands = await getAllBrands();
 
   return (
-    <Container className="mt-10 lg:mt-20 bg-tech_bg_white p-5 lg:p-7 rounded-md">
+    <Container className="mt-10 lg:mt-20 bg-neutral-200 p-5 lg:p-7 rounded-md">
       <div className="flex items-center gap-5 justify-between mb-10">
         <Title>Explore Brands</Title>
         <Link

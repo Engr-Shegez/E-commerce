@@ -11,7 +11,7 @@ import dayjs from "dayjs";
 const RecentlyPublished = async () => {
   const blogs = await getRecentlyPublished();
   return (
-    <Container className="mt-10 lg:mt-20 bg-tech_bg_white p-5 lg:p-7 rounded-md">
+    <Container className="mt-10 lg:mt-20 bg-neutral-200 p-5 lg:p-7 rounded-md">
       <div className="flex items-center gap-5 justify-between mb-10">
         <Title>Recently Published</Title>
         <Link

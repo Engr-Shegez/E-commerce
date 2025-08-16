@@ -42,7 +42,7 @@ const HomeCategories = ({ categories }: Props) => {
         {data?.map((item) => (
           <div
             key={item?.title}
-            className="flex items-center justify-center md:justify-baseline gap-3 md:gap-5 bg-white rounded-md border border-tech_bg_green/20 hover:border-tech_bg_green hoverEffect p-3"
+            className="flex items-center justify-center md:justify-baseline gap-3 md:gap-5 bg-white/70 rounded-md border border-tech_bg_green/20 hover:border-tech_bg_green hoverEffect p-3"
           >
             <span className="bg-tech_bg_green text-white p-2 rounded-full">
               {item?.icon}
@@ -69,7 +69,7 @@ const HomeCategories = ({ categories }: Props) => {
         {categories?.map((category) => (
           <div
             key={category?._id}
-            className="bg-white p-5 flex flex-col items-center gap-3 rounded-lg border border-transparent hover:border-tech_bg_green hoverEffect relative"
+            className="bg-white/90 p-5 flex flex-col items-center gap-3 rounded-lg border border-transparent hover:border-tech_bg_green hoverEffect relative"
           >
             {category?.image && (
               <div className="w-10 h-10 md:w-12 md:h-12 overflow-hidden">

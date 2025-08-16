@@ -8,7 +8,7 @@ import AddToCartButton from "./AddToCartButton";
 
 const ProductCard = ({ product }: { product: Product }) => {
   return (
-    <div className="text-sm rounded-md group bg-tech_bg_white">
+    <div className="text-sm rounded-md group bg-neutral-200">
       <div className="relative overflow-hidden">
         {product?.images && (
           <Link href={`/product/${product?.slug?.current}`}>

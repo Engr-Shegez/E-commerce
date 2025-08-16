@@ -9,7 +9,7 @@ export default async function Home() {
   const categories = await getCategories();
 
   return (
-    <div className="bg-tech_bg_color pt-5 pb-10">
+    <div className="bg-neutral-300 pt-5 pb-10">
       <Banner />
       <HomeCategories categories={categories} />
       <div className="py-10">

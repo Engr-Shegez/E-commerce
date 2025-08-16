@@ -16,9 +16,14 @@ const RECENTLY_PUBLISHED_QUERY = defineQuery(
   title}}`
 );
 
+const PRODUCT_BY_SLUG_QUERY = defineQuery(
+  `*[_type == "product" && slug.current == $slug] | order(name asc) [0]`
+);
+
 export {
   BANNER_QUERY,
   FEATURED_PRODUCTS,
   BRANDS_QUERY,
   RECENTLY_PUBLISHED_QUERY,
+  PRODUCT_BY_SLUG_QUERY,
 };
