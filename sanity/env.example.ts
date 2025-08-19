@@ -18,3 +18,9 @@ function assertValue<T>(v: T | undefined, errorMessage: string): T {
 
   return v;
 }
+
+// Copy this file to env.ts and add your actual Sanity credentials
+// Make sure to set these environment variables in your deployment platform:
+// - NEXT_PUBLIC_SANITY_API_VERSION
+// - NEXT_PUBLIC_SANITY_DATASET
+// - NEXT_PUBLIC_SANITY_PROJECT_ID

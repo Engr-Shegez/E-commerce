@@ -1,9 +1,21 @@
+"use client";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 import {
   internalGroqTypeReferenceTo,
   SanityImageCrop,
   SanityImageHotspot,
 } from "@/sanity.types";
-import React from "react";
+import { urlFor } from "@/sanity/lib/image";
+import { AnimatePresence, motion } from "framer-motion";
+import { X } from "lucide-react";
+import Image from "next/image";
+import React, { useState } from "react";
 
 interface Props {
   images?: Array<{
@@ -22,8 +34,114 @@ interface Props {
 }
 
 const ImageView = ({ images = [], isStock }: Props) => {
+  const [active, setActive] = useState(images[0]);
+  const [showModal, setShowModal] = useState(false);
+  const [initialSlide, setInitialSlide] = useState(0);
+  const openModal = (index: number) => {
+    setInitialSlide(index);
+    setShowModal(true);
+    document.body.style.overflow = "hidden";
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    document.body.style.overflow = "auto";
+  };
+
   return (
-    <div className="w-full md:w-2/5 space-y-2 md:space-y-4">imageView</div>
+    <>
+      <div className="w-full md:w-2/5 space-y-2 md:space-y-4">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={active?._key}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+            className="w-full max-h-[550px] min-h-[300px] border border-tech_bg_dark_color/10 rounded-md group overflow-hidden cursor-pointer group"
+            onClick={() =>
+              openModal(images.findIndex((img) => img._key === active?._key))
+            }
+          >
+            <Image
+              src={urlFor(active).url()}
+              alt="productImage"
+              width={700}
+              height={700}
+              priority
+              className={`w-full h-96 min-h-[500px] object-contain hoverEffect rounded-md ${
+                isStock === 0
+                  ? "opacity-50 group-hover:scale-100"
+                  : "group-hover:scale-110"
+              }`}
+            />
+          </motion.div>
+        </AnimatePresence>
+        <div className="flex flex-wrap gap-2 items-center justify-center">
+          {images?.map((image) => (
+            <button
+              onClick={() => setActive(image)}
+              key={image?._key}
+              className={`border rounded-md overflow-hidden w-16 h-16 ${active._key === image._key ? "ring-1 ring-offset-tech_bg_dark_color" : ""}`}
+            >
+              <Image
+                src={urlFor(image).url()}
+                alt={`Thumbnail ${image._key}`}
+                width={100}
+                height={100}
+                className="w-full h-auto object-contain"
+              />
+            </button>
+          ))}
+        </div>
+      </div>
+      {/* Modal carousel */}
+      <AnimatePresence mode="wait">
+        {showModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-tech_bg_black/50 bg-opacity-80 z-50 flex items-center justify-center p-4"
+            onClick={closeModal}
+          >
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="bg-tech_bg_white rounded-lg max-w-2xl w-full p-4 relative"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                onClick={closeModal}
+                className="absolute right-4 top-4 z-10 bg-white rounded-full p-1 shadow-md hover:bg-gray-100 transition-colors"
+              >
+                <X />
+              </button>
+              <Carousel className="w-full" opts={{ startIndex: initialSlide }}>
+                <CarouselContent>
+                  {images?.map((image) => (
+                    <CarouselItem key={image?._key}>
+                      <div className="flex items-center justify-center h-[500px]">
+                        <Image
+                          src={urlFor(image).url()}
+                          alt={`Product image ${image._key}`}
+                          width={500}
+                          height={500}
+                          className="max-h-full object-contain"
+                        />
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious className="-left-2 hover:bg-amber-700" />
+                <CarouselNext className="-right-2 hover:bg-green-700" />
+              </Carousel>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 };
 

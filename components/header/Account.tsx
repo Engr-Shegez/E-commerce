@@ -1,6 +1,14 @@
 import { User, User2 } from "lucide-react";
 import Link from "next/link";
 import React from "react";
+// import {
+//   // ClerkProvider,
+//   // SignInButton,
+//   // SignUpButton,
+//   SignedIn,
+//   // SignedOut,
+//   // UserButton,
+// } from "@clerk/nextjs";
 
 function Account() {
   return (

@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 
+import { Toaster } from "react-hot-toast";
 import "./globals.css";
+import { ClerkProvider } from "@clerk/nextjs";
 
 const trebuchet = localFont({
   src: "./fonts/trebuc.ttf",
@@ -23,8 +25,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${trebuchet.variable} antialiased`}>{children}</body>
-    </html>
+    <ClerkProvider>
+      <html lang="en">
+        <body className={`${trebuchet.variable} antialiased`}>
+          {children}
+          <Toaster
+            position="bottom-right"
+            toastOptions={{
+              style: {
+                background: "#000000",
+                color: "#fff",
+              },
+            }}
+          />
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

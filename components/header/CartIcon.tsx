@@ -1,8 +1,11 @@
+"use client";
+import useCartStore from "@/Store";
 import { ShoppingBag } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 
 function CartIcon() {
+  const { items } = useCartStore();
   return (
     <Link
       href={"/cart"}
@@ -11,7 +14,7 @@ function CartIcon() {
       <span className="relative">
         <ShoppingBag className="text-tech_bg_light_green group-hover:text-tech_bg_white hoverEffect" />
         <span className="absolute -top-1 -right-1 bg-tech_bg_orange text-tech_bg_white h-3.5 w-3.5 rounded-full text-xs font-semibold flex items-center justify-center">
-          0
+          {items?.length ? items?.length : 0}
         </span>
       </span>
       <div className="hidden lg:flex flex-col">

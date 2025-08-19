@@ -1,6 +1,7 @@
 import { sanityFetch } from "../lib/live";
 import {
   BANNER_QUERY,
+  BRAND_QUERY,
   BRANDS_QUERY,
   FEATURED_PRODUCTS,
   PRODUCT_BY_SLUG_QUERY,
@@ -40,7 +41,6 @@ const getCategories = async (quantity?: number) => {
 const getFeaturedProducts = async () => {
   try {
     const { data } = await sanityFetch({ query: FEATURED_PRODUCTS });
-    console.log("Raw Sanity response:", { data });
     return data ?? [];
   } catch (error) {
     console.error("Error fetching featured Products Data", error);
@@ -92,6 +92,19 @@ const getProductBySlug = async (slug: string) => {
   }
 };
 
+const getBrand = async (slug: string) => {
+  try {
+    const product = await sanityFetch({
+      query: BRAND_QUERY,
+      params: { slug },
+    });
+    return product?.data || null;
+  } catch (error) {
+    console.error("Error fetching product by ID", error);
+    return null;
+  }
+};
+
 export {
   getBanner,
   getCategories,
@@ -100,4 +113,5 @@ export {
   getAllBrands,
   getRecentlyPublished,
   getProductBySlug,
+  getBrand,
 };

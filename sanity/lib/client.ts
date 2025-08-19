@@ -2,9 +2,6 @@ import { createClient } from "next-sanity";
 
 import { apiVersion, dataset, projectId } from "../env";
 
-// Debug logging
-console.log("Sanity Client Config:", { projectId, dataset, apiVersion });
-
 export const client = createClient({
   projectId,
   dataset,
