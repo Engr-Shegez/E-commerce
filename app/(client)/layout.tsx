@@ -1,5 +1,7 @@
 import Header from "@/components/header/Header";
 import Footer from "@/components/common/Footer";
+import CartMenu from "@/components/common/CartMenu";
+import LinkBadge from "@/components/common/LinkBadge";
 
 export default function ClientLayout({
   children,
@@ -7,7 +9,9 @@ export default function ClientLayout({
   return (
     <>
       <Header />
+      <LinkBadge />
       {children}
+      <CartMenu />
       <Footer />
     </>
   );

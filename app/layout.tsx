@@ -27,7 +27,7 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body className={`${trebuchet.variable} antialiased`}>
+        <body className={`${trebuchet.variable} antialiased bg-tech_bg_color`}>
           {children}
           <Toaster
             position="bottom-right"

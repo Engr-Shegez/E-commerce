@@ -7,7 +7,17 @@ import { User } from "lucide-react";
 import Image from "next/image";
 
 const RootLayout = async ({ children }: { children: React.ReactNode }) => {
-  const user = await currentUser();
+  let user;
+  try {
+    user = await currentUser();
+  } catch (err) {
+    // Log the underlying error to the server console so we can see the real problem
+    // and prevent the render from failing with an empty message.
+    // Keep user undefined so the page still renders a fallback UI.
+    console.error("currentUser() failed in account layout:", err);
+    user = undefined;
+  }
+
   return (
     <div className="bg-tech_bg_white min-h-screen pt-4 pb-8">
       <Container>

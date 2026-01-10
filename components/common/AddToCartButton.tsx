@@ -1,5 +1,6 @@
 "use client";
 import { cn } from "@/lib/utils";
+import { Product } from "@/sanity.types";
 import useCartStore from "@/Store";
 import { ShoppingCart } from "lucide-react";
 import React from "react";

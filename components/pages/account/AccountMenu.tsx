@@ -43,7 +43,7 @@ const accountsMenu = [
 const AccountMenu = () => {
   const pathname = usePathname();
   const router = useRouter();
-  //   if (pathname === "/account/account") return null;
+  if (pathname === "/account/account") return null;
   const currentPage = accountsMenu.find((item) => item.href === pathname);
 
   const handleSelectChange = (value: string) => {
