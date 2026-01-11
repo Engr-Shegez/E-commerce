@@ -7,7 +7,7 @@ const ShopPage = async () => {
   const brands = await getAllBrands();
   return (
     <div className="bg-tech_bg_color pb-10">
-      <Shop />
+      <Shop categories={categories} brands={brands} />
     </div>
   );
 };
