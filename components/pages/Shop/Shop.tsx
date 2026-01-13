@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Brand, Category, Product } from "@/sanity.types";
 import { useSearchParams } from "next/navigation";
 import Container from "@/components/common/Container";
@@ -8,6 +8,8 @@ import { Filter, X } from "lucide-react";
 import CategoryList from "./CategoryList";
 import BrandList from "./BrandList";
 import PriceList from "./PriceList";
+import { client } from "@/sanity/lib/client";
+import ProductCard from "@/components/common/ProductCard";
 
 interface Props {
   categories: Category[];
@@ -18,6 +20,7 @@ const Shop = ({ categories, brands }: Props) => {
   const searchParams = useSearchParams();
   const brandParams = searchParams?.get("brand");
   const categoryParams = searchParams?.get("category");
+  const priceParams = searchParams?.get("price");
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -25,9 +28,54 @@ const Shop = ({ categories, brands }: Props) => {
     brandParams || null
   );
   const [selectedPrice, setSelectedPrice] = useState<string | null>(
-    categoryParams || null
+    priceParams || null
   );
   const [showFilters, setShowFilters] = useState(false);
+  const resetFilters = () => {
+    setSelectedCategory(null);
+    setSelectedBrand(null);
+    setSelectedPrice(null);
+  };
+
+  const fetchProducts = async () => {
+    setLoading(true);
+    try {
+      // Extract min and max price from selectedPrice
+      let minPrice = 0;
+      let maxPrice = 1000;
+      if (selectedPrice) {
+        const [min, max] = selectedPrice.split("-").map(Number);
+        minPrice = min;
+        maxPrice = max;
+      }
+      const query = `*[_type == "product" && ($selectedCategory == null || references(*[_type == "category" && slug.current == $selectedCategory]._id)) && ($selectedBrand == null || references(*[_type == "brand" && slug.current == $selectedBrand]._id)) && price >= $minPrice && price <= $maxPrice] | order(name asc) {
+        _id, name, slug, price, discount, stock, images,
+        "categories": categories[]->{title, slug, _id},
+        "brand": brand->{title, slug, _id}
+      }`;
+      const data = await client.fetch(
+        query,
+        {
+          selectedCategory,
+          selectedBrand,
+          minPrice,
+          maxPrice,
+        },
+        {
+          next: { revalidate: 0 },
+        }
+      );
+      console.log("data", data);
+      setProducts(data || []);
+    } catch (error) {
+      console.log("Shop Product fetching Errror", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    fetchProducts();
+  }, [selectedPrice, selectedBrand, selectedCategory]);
 
   return (
     <div className="border-t">
@@ -38,9 +86,17 @@ const Shop = ({ categories, brands }: Props) => {
               Get the products as your needs
             </Title>
             <div className="flex items-center gap-2">
-              <button className="text-tech_bg_dark-red underline text-smfont-medium hover:text-tech_bg_orange hoverEffect">
-                Reset Filters
-              </button>
+              {(selectedCategory !== null ||
+                selectedBrand !== null ||
+                selectedPrice !== null) && (
+                <button
+                  onClick={resetFilters}
+                  className="text-tech_bg_dark-red underline text-sm font-medium hover:text-tech_bg_orange hoverEffect"
+                >
+                  Reset Filters
+                </button>
+              )}
+
               <button
                 onClick={() => setShowFilters(!showFilters)}
                 className="md:hidden flex items-center gap-1 bg-tech_bg_dark_red text-white px-3 mt-1 py-1.5 rounded-md "
@@ -78,10 +134,35 @@ const Shop = ({ categories, brands }: Props) => {
                 // setShowFilters(false);
               }}
             />
-            <BrandList />
-            <PriceList />
+            <BrandList
+              brands={brands}
+              setSelectedBrand={(brand) => {
+                setSelectedBrand(brand);
+                setShowFilters(false);
+              }}
+              selectedBrand={selectedBrand}
+            />
+            <PriceList
+              setSelectedPrice={(price) => {
+                setSelectedPrice(price);
+                setShowFilters(false);
+              }}
+              selectedPrice={selectedPrice}
+            />
           </div>
-          <div>Products</div>
+          <div className="flex-1">
+            {loading ? (
+              <div>Loading...</div>
+            ) : products.length === 0 ? (
+              <div>No products found</div>
+            ) : (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2.5 mt-5">
+                {products.map((product) => (
+                  <ProductCard key={product?._id} product={product} />
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </Container>
     </div>

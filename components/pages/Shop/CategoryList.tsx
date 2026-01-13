@@ -32,10 +32,23 @@ const CategoryList = ({
               id={category?.slug?.current}
               className="rounded-sm border-black/50 "
             />
-            <Label>{category?.title}</Label>
+            <Label
+              htmlFor={category?.slug?.current}
+              className={`${selectedCategory === category?.slug?.current ? "font-semibold text-tech_bg_orange" : "font-normal"} hover:cursor-pointer`}
+            >
+              {category?.title}
+            </Label>
           </div>
         ))}
       </RadioGroup>
+      {selectedCategory && (
+        <button
+          onClick={() => setSelectedCategory(null)}
+          className="text-sm font-medium mt-2 underline underline-offset-2 decoration-[1px hover:text-tech_bg_dark-red hoverEffect]"
+        >
+          Reset selection
+        </button>
+      )}
     </div>
   );
 };

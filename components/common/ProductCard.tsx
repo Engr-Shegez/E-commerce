@@ -35,7 +35,15 @@ const ProductCard = ({ product }: { product: Product }) => {
       <div className="p-3 flex flex-col gap-2">
         {product?.categories && (
           <p className="uppercase line-clamp-1 text-xs font-medium text-tech_bg_dark/50">
-            {product?.categories.map((cat) => cat).join(",")}
+            {Array.isArray(product?.categories) &&
+              (typeof product?.categories[0] === "object"
+                ? product?.categories.map((cat: any) => cat.title).join(",")
+                : product?.categories.map((cat: any) => cat).join(","))}
+          </p>
+        )}
+        {product?.brand && (
+          <p className="uppercase line-clamp-1 text-xs font-medium text-tech_bg_dark/50">
+            {product?.brand?.title}
           </p>
         )}
         <Title className="text-base line-clamp-2 h-12">{product?.name}</Title>
