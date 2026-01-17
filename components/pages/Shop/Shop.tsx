@@ -4,7 +4,7 @@ import { Brand, Category, Product } from "@/sanity.types";
 import { useSearchParams } from "next/navigation";
 import Container from "@/components/common/Container";
 import Title from "@/components/common/Title";
-import { Filter, X } from "lucide-react";
+import { Filter, Loader2, X } from "lucide-react";
 import CategoryList from "./CategoryList";
 import BrandList from "./BrandList";
 import PriceList from "./PriceList";
@@ -65,7 +65,7 @@ const Shop = ({ categories, brands }: Props) => {
           next: { revalidate: 0 },
         }
       );
-      console.log("data", data);
+
       setProducts(data || []);
     } catch (error) {
       console.log("Shop Product fetching Errror", error);
@@ -150,13 +150,19 @@ const Shop = ({ categories, brands }: Props) => {
               selectedPrice={selectedPrice}
             />
           </div>
-          <div className="flex-1">
+          <div className="flex-1 pt-2">
             {loading ? (
-              <div>Loading...</div>
-            ) : products.length === 0 ? (
+              <div className="p-10 md:p-20 flex flex-col gap-2 items-center justify-center bg-white rounded-md">
+                <Loader2 className="w-8 h-8 md:w-10 md:h-10 text-tech_orange animate-spin" />
+                <p className="font-semibold tracking-wide text-base">
+                  {" "}
+                  Product is Loading...
+                </p>
+              </div>
+            ) : products?.length === 0 ? (
               <div>No products found</div>
             ) : (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2.5 mt-5">
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2.5 mt-5">
                 {products.map((product) => (
                   <ProductCard key={product?._id} product={product} />
                 ))}

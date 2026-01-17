@@ -1,7 +1,8 @@
 "use client";
 import { Product } from "@/sanity.types";
-import { Search } from "lucide-react";
-import React, { useRef, useState } from "react";
+import { client } from "@/sanity/lib/client";
+import { Loader2, Search, X } from "lucide-react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
 const ProductComparison = () => {
   const [productOne, setProductOne] = useState<Product | null>(null);
@@ -16,6 +17,109 @@ const ProductComparison = () => {
   const [showResultsTwo, setShowResultsTwo] = useState(false);
   const searchRefOne = useRef<HTMLDivElement>(null);
   const searchRefTwo = useRef<HTMLDivElement>(null);
+
+  //Fetch Products for first input
+  const fetchProductsOne = useCallback(async () => {
+    if (!searchOne) {
+      setProductOne([]);
+      return;
+    }
+    setLoadingOne(true);
+    try {
+      const query = `*[_type == "product" && name match $search] | order(name asc)[0...10]`;
+      const params = { search: `${searchOne}*` };
+      const response = await client.fetch(query, params);
+      setProductsOne(response);
+    } catch (error) {
+      console.error("Error fetching products one", error);
+    } finally {
+      setLoadingOne(false);
+    }
+  }, [searchOne]);
+
+  const fetchProductsTwo = useCallback(async () => {
+    if (!searchTwo) {
+      setProductsTwo([]);
+      return;
+    }
+    setLoadingTwo(true);
+    try {
+      const query = `*[_type == "product" && name match $search] | order(name asc)[0...10]`;
+      const params = { search: `${searchTwo}*` };
+      const response = await client.fetch(query, params);
+      setProductsTwo(response);
+    } catch (error) {
+      console.error("Error fetching products one", error);
+    } finally {
+      setLoadingTwo(false);
+    }
+  }, [searchTwo]);
+
+  // Debounce input changes for first search
+
+  useEffect(() => {
+    const debounceTimer = setTimeout(() => {
+      fetchProductsOne();
+    }, 300);
+    return () => clearTimeout(debounceTimer);
+  }, [searchOne, fetchProductsOne]);
+
+  // Debounce input changes for first search
+
+  useEffect(() => {
+    const debounceTimer = setTimeout(() => {
+      fetchProductsTwo();
+    }, 300);
+    return () => clearTimeout(debounceTimer);
+  }, [searchTwo, fetchProductsTwo]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        searchRefOne.current &&
+        !searchRefOne.current.contains(event.target as Node)
+      ) {
+        setShowResultsOne(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  // close results when clicking outside for second input
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        searchRefTwo.current &&
+        !searchRefTwo.current.contains(event.target as Node)
+      ) {
+        setShowResultsTwo(false);
+      }
+    };
+  });
+
+  const handleSelectProductOne = (product: Product) => {
+    setProductOne(product);
+    setSearchOne(product?.name as string);
+    setShowResultsOne(false);
+  }; // Handle product selection for second input
+  const handleSelectProductTwo = (product: Product) => {
+    setProductTwo(product);
+    setSearchTwo(product.name as string);
+    setShowResultsTwo(false);
+  };
+
+  const handleCompare = () => {
+    if (!productOne || productTwo) {
+      alert("please select two products to compare");
+      return;
+    }
+    //  Navigate to the comparison with selected products
+    window.location.href = `/compare?product1=${productOne.slug?.current}&product2=${productTwo.slug?.current}`;
+  };
+
   return (
     <div className="bg-yellow-100 rounded-md p-4 flex flex-col justify-center items-center h-1/2">
       <div className="text-center">
@@ -26,28 +130,124 @@ const ProductComparison = () => {
       </div>
       <div className="space-y-2 w-full mt-2">
         {/* First product search */}
-        <div className="relative w-full">
+        <div ref={searchRefOne} className="relative w-full">
           <div className="w-full bg-tech_white px-3 py-1.5 rounded-md flex items-center justify-between">
             <input
               type="text"
               placeholder="Browse and select an Item"
               className="flex-1 outline-0 text-sm mr-2"
+              value={searchOne}
+              onChange={(e) => setSearchOne(e.target.value)}
+              onFocus={() => setShowResultsOne(true)}
             />
-            <Search size={18} />
+            {searchOne ? (
+              <X
+                size={16}
+                className="cursor-pointer text-gray-500 hover:text-tech_bg_dark_red"
+                onClick={() => {
+                  setSearchOne("");
+                  setProductOne(null);
+                }}
+              />
+            ) : (
+              <Search size={18} />
+            )}
           </div>
+          {/* search result for first product */}
+          {showResultsOne && (
+            <div className="absolute z-10 mt-1 w-full bg-white rounded-md shadow-lg max-h-48 overflow-y-auto border border-gray-200">
+              {loadingOne ? (
+                <div className="flex items-center justify-center p-2">
+                  <Loader2
+                    size={16}
+                    className="animate-spin text-tech_bg_dark_red"
+                  />
+                  <span className="ml-2 text-sm">Searching...</span>
+                </div>
+              ) : productsOne?.length > 0 ? (
+                <div>
+                  {productsOne?.map((product) => (
+                    <div
+                      key={product?._id}
+                      onClick={() => handleSelectProductOne(product)}
+                      className="px-3 py-2 hover:bg-gray-100 cursor-pointer border-b border-gray-qoo last:border-b-0"
+                    >
+                      <p className="text-sm font-medium line-clamp-1">
+                        {product?.name}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              ) : searchOne ? (
+                <div className="p-3 text-sm text-gray-500">
+                  No products found
+                </div>
+              ) : null}
+            </div>
+          )}
         </div>
         {/* Second product search */}
-        <div className="relative w-full">
+        <div ref={searchRefTwo} className="relative w-full">
           <div className="w-full bg-tech_white px-3 py-1.5 rounded-md flex items-center justify-between">
             <input
               type="text"
               placeholder="Browse and select an Item"
               className="flex-1 outline-0 text-sm mr-2"
+              value={searchTwo}
+              onChange={(e) => setSearchTwo(e.target.value)}
+              onFocus={() => setShowResultsTwo(true)}
             />
-            <Search size={18} />
+            {searchTwo ? (
+              <X
+                size={16}
+                className="cursor-pointer text-gray-500 hover:text-tech_bg_dark_red"
+                onClick={() => {
+                  setSearchTwo("");
+                  setProductTwo(null);
+                }}
+              />
+            ) : (
+              <Search size={18} />
+            )}
           </div>
+          {/* search result for second product */}
+          {showResultsTwo && (
+            <div className="absolute z-10 mt-1 w-full bg-white rounded-md shadow-lg max-h-48 overflow-y-auto border border-gray-200">
+              {loadingTwo ? (
+                <div className="flex items-center justify-center p-2">
+                  <Loader2
+                    size={16}
+                    className="animate-spin text-tech_bg_dark_red"
+                  />
+                  <span className="ml-2 text-sm">Searching...</span>
+                </div>
+              ) : productsTwo?.length > 0 ? (
+                <div>
+                  {productsTwo?.map((product) => (
+                    <div
+                      key={product?._id}
+                      onClick={() => handleSelectProductTwo(product)}
+                      className="px-3 py-2 hover:bg-gray-100 cursor-pointer border-b border-gray-qoo last:border-b-0"
+                    >
+                      <p className="text-sm font-medium line-clamp-1">
+                        {product?.name}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              ) : searchTwo ? (
+                <div className="p-3 text-sm text-gray-500">
+                  No products found
+                </div>
+              ) : null}
+            </div>
+          )}
         </div>
-        <button className="border rounded-sm w-full text-sm font-semibold py-1.5 transition-colors bg-gray-100 border-gray-300 text-gray-400 cursor-not-allowed">
+        <button
+          onClick={handleCompare}
+          disabled={!productOne || !productTwo}
+          className={`border rounded-sm w-full text-sm font-semibold py-1.5 transition-colors ${productOne && productTwo ? " border-tech_bg_blue hover:bg-tech_bg_blue hover:text-tech_bg_white" : "bg-gray-100 border-gray-300 text-gray-400 cursor-not-allowed"} `}
+        >
           Compare Now
         </button>
       </div>
