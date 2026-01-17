@@ -112,7 +112,7 @@ const ProductComparison = () => {
   };
 
   const handleCompare = () => {
-    if (!productOne || productTwo) {
+    if (!productOne || !productTwo) {
       alert("please select two products to compare");
       return;
     }
