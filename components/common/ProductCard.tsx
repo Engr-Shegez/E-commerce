@@ -26,7 +26,8 @@ const ProductCard = ({ product }: { product: Product }) => {
           <p className="absolute top-2 left-0 z-10 text-xs border border-l-0 bg-tech_bg_purple text-tech_bg_white font-semibold border-tech_bg_dark/50 rounded-r-full px-2 ">
             Save:
             {Math.round(
-              (product?.price as number) * ((product?.discount as number) / 100)
+              (product?.price as number) *
+                ((product?.discount as number) / 100),
             )}{" "}
             {`(-${product?.discount}%)`}
           </p>
@@ -37,13 +38,21 @@ const ProductCard = ({ product }: { product: Product }) => {
           <p className="uppercase line-clamp-1 text-xs font-medium text-tech_bg_dark/50">
             {Array.isArray(product?.categories) &&
               (typeof product?.categories[0] === "object"
-                ? product?.categories.map((cat: any) => cat.title).join(",")
-                : product?.categories.map((cat: any) => cat).join(","))}
+                ? product?.categories
+                    .map((cat) =>
+                      typeof cat === "object" && cat !== null && "title" in cat
+                        ? (cat as { title?: string }).title
+                        : String(cat),
+                    )
+                    .join(",")
+                : product?.categories.map((cat) => String(cat)).join(","))}
           </p>
         )}
         {product?.brand && (
           <p className="uppercase line-clamp-1 text-xs font-medium text-tech_bg_dark/50">
-            {product?.brand?.title}
+            {typeof product.brand === "object" && product.brand !== null && "title" in product.brand
+              ? (product.brand as { title?: string }).title ?? ""
+              : String(product.brand)}
           </p>
         )}
         <Title className="text-base line-clamp-2 h-12">{product?.name}</Title>

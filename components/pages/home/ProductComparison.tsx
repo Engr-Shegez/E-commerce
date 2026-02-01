@@ -21,7 +21,7 @@ const ProductComparison = () => {
   //Fetch Products for first input
   const fetchProductsOne = useCallback(async () => {
     if (!searchOne) {
-      setProductOne([]);
+      setProductsOne([]);
       return;
     }
     setLoadingOne(true);
@@ -98,7 +98,11 @@ const ProductComparison = () => {
         setShowResultsTwo(false);
       }
     };
-  });
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const handleSelectProductOne = (product: Product) => {
     setProductOne(product);
