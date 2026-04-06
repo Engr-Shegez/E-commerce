@@ -2,6 +2,7 @@ import Container from "@/components/common/Container";
 import Title from "@/components/common/Title";
 import { urlFor } from "@/sanity/lib/image";
 import { getRecentlyPublished } from "@/sanity/queries";
+import type { Blog } from "@/sanity.types";
 import { Calendar } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";

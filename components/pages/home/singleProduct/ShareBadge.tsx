@@ -1,5 +1,6 @@
 "use client";
 import React from "react";
+import type { Product } from "@/sanity.types";
 import { FaPinterest } from "react-icons/fa";
 import { MdAddToPhotos } from "react-icons/md";
 import { RiMessengerFill, RiWhatsappFill } from "react-icons/ri";

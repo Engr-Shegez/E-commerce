@@ -6,6 +6,8 @@ import { currentUser } from "@clerk/nextjs/server";
 import { User } from "lucide-react";
 import Image from "next/image";
 
+export const dynamic = "force-dynamic";
+
 const RootLayout = async ({ children }: { children: React.ReactNode }) => {
   let user;
   try {
