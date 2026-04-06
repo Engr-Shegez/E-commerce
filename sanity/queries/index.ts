@@ -21,15 +21,12 @@ const getBanner = async () => {
 const getCategories = async (quantity?: number) => {
   try {
     const query = quantity
-      ? `*[_type == "category"] | order(name asc) [0...$quantity] {..., 
-      "productCount": count(*[_type == "product" && references(^._id)])
-    }`
-      : `*[_type == "category"] | order(name asc) {...,"productCount": count(*[_type == "product" && references(^._id)])
-    }`;
+      ? `*[_type == "category"] | order(name asc) [0...$quantity] {..., "productCount": count(*[_type == "product" && references(^._id)])}`
+      : `*[_type == "category"] | order(name asc) {..., "productCount": count(*[_type == "product" && references(^._id)])}`;
 
     const { data } = await sanityFetch({
       query,
-      params: quantity ? { quantity } : {},
+      params: quantity ? { quantity: quantity - 1 } : {},
     });
     return data ?? [];
   } catch (error) {
@@ -79,6 +76,69 @@ const getRecentlyPublished = async () => {
   }
 };
 
+const getAllBlogs = async () => {
+  try {
+    const { data } = await sanityFetch({
+      query: `*[_type == "blog"] | order(publishedAt desc){
+        ...,
+        "authorName": author->name,
+        "blogcategories": blogcategories[]->
+      }`,
+    });
+    return data ?? [];
+  } catch (error) {
+    console.error("Error fetching all blogs", error);
+    return [];
+  }
+};
+
+const getBlogBySlug = async (slug: string) => {
+  try {
+    const { data } = await sanityFetch({
+      query: `*[_type == "blog" && slug.current == $slug][0]{
+        ...,
+        "authorName": author->name,
+        "blogcategories": blogcategories[]->
+      }`,
+      params: { slug },
+    });
+    return data ?? null;
+  } catch (error) {
+    console.error("Error fetching blog by slug", error);
+    return null;
+  }
+};
+
+const getCategoryBySlug = async (slug: string) => {
+  try {
+    const { data } = await sanityFetch({
+      query: `*[_type == "category" && slug.current == $slug][0]`,
+      params: { slug },
+    });
+    return data ?? null;
+  } catch (error) {
+    console.error("Error fetching category by slug", error);
+    return null;
+  }
+};
+
+const getProductsByCategorySlug = async (slug: string) => {
+  try {
+    const { data } = await sanityFetch({
+      query: `*[_type == "product" && references(*[_type == "category" && slug.current == $slug][0]._id)] | order(name asc){
+        ...,
+        "categories": categories[]->title,
+        "brand": brand->
+      }`,
+      params: { slug },
+    });
+    return data ?? [];
+  } catch (error) {
+    console.error("Error fetching products by category slug", error);
+    return [];
+  }
+};
+
 const getProductBySlug = async (slug: string) => {
   try {
     const product = await sanityFetch({
@@ -112,6 +172,10 @@ export {
   getAllProducts,
   getAllBrands,
   getRecentlyPublished,
+  getAllBlogs,
+  getBlogBySlug,
+  getCategoryBySlug,
+  getProductsByCategorySlug,
   getProductBySlug,
   getBrand,
 };
