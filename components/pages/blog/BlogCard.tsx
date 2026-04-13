@@ -6,7 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 
-type BlogWithMeta = Blog & {
+type BlogWithMeta = Omit<Blog, "blogcategories"> & {
   authorName?: string;
   blogcategories?: Blogcategory[];
 };
@@ -30,8 +30,8 @@ const BlogCard = ({ blog }: { blog: BlogWithMeta }) => {
         <div className="flex flex-wrap items-center gap-3 text-xs font-semibold uppercase tracking-[0.15em] text-tech_bg_green">
           {blog.blogcategories
             ?.slice(0, 2)
-            .map((category: Blogcategory & { _key?: string }) => (
-            <span key={category._id || category.title}>{category.title}</span>
+            .map((category) => (
+              <span key={category._id || category.title}>{category.title}</span>
             ))}
         </div>
         <div className="space-y-2">
