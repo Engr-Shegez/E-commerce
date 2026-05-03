@@ -4,7 +4,6 @@ import Container from "@/components/common/Container";
 import Title from "@/components/common/Title";
 import { Product } from "@/sanity.types";
 import { client } from "@/sanity/lib/client";
-import useCartStore from "@/Store";
 import { ChevronLeft, Loader2, Search, X } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -12,9 +11,8 @@ import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 const ComparePage = () => {
-  const { addItem } = useCartStore();
   const searchParams = useSearchParams();
-  const [products, setProducts] = useState<(Product | null)[]>([
+  const [, setProducts] = useState<(Product | null)[]>([
     null,
     null,
     null,
@@ -30,24 +28,13 @@ const ComparePage = () => {
     [],
     [],
   ]);
-  const [loadingSearches, setLoadingSearches] = useState<boolean[]>([
-    false,
-    false,
-    false,
-    false,
-  ]);
   const [showResults, setShowResults] = useState<boolean[]>([
     false,
     false,
     false,
     false,
   ]);
-  const searchRefs = [
-    useRef<HTMLDivElement>(null),
-    useRef<HTMLDivElement>(null),
-    useRef<HTMLDivElement>(null),
-    useRef<HTMLDivElement>(null),
-  ];
+  const searchRefs = useRef<Array<HTMLDivElement | null>>([null, null, null, null]);
 
   // Fetch products based on URL params
   useEffect(() => {
@@ -56,7 +43,7 @@ const ComparePage = () => {
       try {
         const product1Slug = searchParams.get("product1");
         const product2Slug = searchParams.get("product2");
-        const newProducts = [...products];
+        const newProducts: (Product | null)[] = [null, null, null, null];
         if (product1Slug) {
           const query = `*[_type == "product" && slug.current == $slug][0]`;
           const product1 = await client.fetch(query, { slug: product1Slug });
@@ -99,11 +86,6 @@ const ComparePage = () => {
         });
         return;
       }
-      setLoadingSearches((prev) => {
-        const newLoading = [...prev];
-        newLoading[index] = true;
-        return newLoading;
-      });
 
       try {
         const query = `*[_type == "product" && name match $search] | order(name asc)[0...10]`;
@@ -117,12 +99,6 @@ const ComparePage = () => {
         });
       } catch (error) {
         console.error("Error searching products:", error);
-      } finally {
-        setLoadingSearches((prev) => {
-          const newLoading = [...prev];
-          newLoading[index] = false;
-          return newLoading;
-        });
       }
     },
     [],
@@ -145,8 +121,8 @@ const ComparePage = () => {
   // Close search results when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      searchRefs.forEach((ref, index) => {
-        if (ref.current && !ref.current.contains(event.target as Node)) {
+      searchRefs.current.forEach((ref, index) => {
+        if (ref && !ref.contains(event.target as Node)) {
           setShowResults((prev) => {
             const newShow = [...prev];
             newShow[index] = false;
@@ -161,39 +137,6 @@ const ComparePage = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-
-  // Handle product selection
-  const handleSelectProduct = (index: number, product: Product) => {
-    setProducts((prev) => {
-      const newProducts = [...prev];
-      newProducts[index] = product;
-
-      // Update URL with new product slugs
-      const url = new URL(window.location.href);
-      const params = new URLSearchParams(url.search);
-
-      if (index === 0) params.set("product1", product.slug?.current || "");
-      if (index === 1) params.set("product2", product.slug?.current || "");
-      if (index === 2) params.set("product3", product.slug?.current || "");
-      if (index === 3) params.set("product4", product.slug?.current || "");
-
-      window.history.pushState({}, "", `${url.pathname}?${params.toString()}`);
-
-      return newProducts;
-    });
-
-    setSearches((prev) => {
-      const newSearches = [...prev];
-      newSearches[index] = product.name as string;
-      return newSearches;
-    });
-
-    setShowResults((prev) => {
-      const newShow = [...prev];
-      newShow[index] = false;
-      return newShow;
-    });
-  };
 
   const clearProduct = (index: number) => {
     setProducts((prev) => {
@@ -250,8 +193,13 @@ const ComparePage = () => {
                 <tr className="border-b">
                   <td className="p-4 bg-gray-50 font-medium">Product</td>
                   {[0, 1, 2, 3].map((index) => (
-                    <td key={`search-${index}`} className="p-4 border-l">
-                      <div ref={searchRefs[index]} className="relative">
+                  <td key={`search-${index}`} className="p-4 border-l">
+                      <div
+                        ref={(element) => {
+                          searchRefs.current[index] = element;
+                        }}
+                        className="relative"
+                      >
                         <div className="w-full bg-gray-50 px-3 py-2 rounded-md flex items-center justify-between">
                           <input
                             placeholder="Search Product"

@@ -1,4 +1,4 @@
-import { sanityFetch } from "../lib/live";
+import { client } from "../lib/client";
 import {
   BANNER_QUERY,
   BRAND_QUERY,
@@ -8,39 +8,41 @@ import {
   RECENTLY_PUBLISHED_QUERY,
 } from "./query";
 
+const logSanityError = (message: string, error: unknown) => {
+  console.error(message, error instanceof Error ? error.message : error);
+};
+
 const getBanner = async () => {
   try {
-    const { data } = await sanityFetch({ query: BANNER_QUERY });
+    const data = await client.fetch(BANNER_QUERY);
     return data ?? [];
   } catch (error) {
-    console.error("Error fetching Banners Data", error);
+    logSanityError("Error fetching Banners Data", error);
     return [];
   }
 };
 
 const getCategories = async (quantity?: number) => {
   try {
-    const query = quantity
+    const hasQuantity = typeof quantity === "number";
+    const query = hasQuantity
       ? `*[_type == "category"] | order(name asc) [0...$quantity] {..., "productCount": count(*[_type == "product" && references(^._id)])}`
       : `*[_type == "category"] | order(name asc) {..., "productCount": count(*[_type == "product" && references(^._id)])}`;
 
-    const { data } = await sanityFetch({
-      query,
-      params: quantity ? { quantity: quantity - 1 } : {},
-    });
+    const data = await client.fetch(query, hasQuantity ? { quantity } : {});
     return data ?? [];
   } catch (error) {
-    console.error("Error fetching Categories Data", error);
+    logSanityError("Error fetching Categories Data", error);
     return [];
   }
 };
 
 const getFeaturedProducts = async () => {
   try {
-    const { data } = await sanityFetch({ query: FEATURED_PRODUCTS });
+    const data = await client.fetch(FEATURED_PRODUCTS);
     return data ?? [];
   } catch (error) {
-    console.error("Error fetching featured Products Data", error);
+    logSanityError("Error fetching featured Products Data", error);
     return [];
   }
 };
@@ -48,119 +50,111 @@ const getFeaturedProducts = async () => {
 // Temporary test function - get all products
 const getAllProducts = async () => {
   try {
-    const { data } = await sanityFetch({ query: FEATURED_PRODUCTS });
+    const data = await client.fetch(FEATURED_PRODUCTS);
     return data ?? [];
   } catch (error) {
-    console.error("Error fetching all Products Data", error);
+    logSanityError("Error fetching all Products Data", error);
     return [];
   }
 };
 
 const getAllBrands = async () => {
   try {
-    const { data } = await sanityFetch({ query: BRANDS_QUERY });
+    const data = await client.fetch(BRANDS_QUERY);
     return data ?? [];
   } catch (error) {
-    console.error("Error fetching all Brands Data", error);
+    logSanityError("Error fetching all Brands Data", error);
     return [];
   }
 };
 
 const getRecentlyPublished = async () => {
   try {
-    const { data } = await sanityFetch({ query: RECENTLY_PUBLISHED_QUERY });
+    const data = await client.fetch(RECENTLY_PUBLISHED_QUERY);
     return data ?? [];
   } catch (error) {
-    console.error("Error fetching all Blog Data", error);
+    logSanityError("Error fetching all Blog Data", error);
     return [];
   }
 };
 
 const getAllBlogs = async () => {
   try {
-    const { data } = await sanityFetch({
-      query: `*[_type == "blog"] | order(publishedAt desc){
+    const data = await client.fetch(`*[_type == "blog"] | order(publishedAt desc){
         ...,
         "authorName": author->name,
         "blogcategories": blogcategories[]->
-      }`,
-    });
+      }`);
     return data ?? [];
   } catch (error) {
-    console.error("Error fetching all blogs", error);
+    logSanityError("Error fetching all blogs", error);
     return [];
   }
 };
 
 const getBlogBySlug = async (slug: string) => {
   try {
-    const { data } = await sanityFetch({
-      query: `*[_type == "blog" && slug.current == $slug][0]{
+    const data = await client.fetch(
+      `*[_type == "blog" && slug.current == $slug][0]{
         ...,
         "authorName": author->name,
         "blogcategories": blogcategories[]->
       }`,
-      params: { slug },
-    });
+      { slug }
+    );
     return data ?? null;
   } catch (error) {
-    console.error("Error fetching blog by slug", error);
+    logSanityError("Error fetching blog by slug", error);
     return null;
   }
 };
 
 const getCategoryBySlug = async (slug: string) => {
   try {
-    const { data } = await sanityFetch({
-      query: `*[_type == "category" && slug.current == $slug][0]`,
-      params: { slug },
-    });
+    const data = await client.fetch(
+      `*[_type == "category" && slug.current == $slug][0]`,
+      { slug }
+    );
     return data ?? null;
   } catch (error) {
-    console.error("Error fetching category by slug", error);
+    logSanityError("Error fetching category by slug", error);
     return null;
   }
 };
 
 const getProductsByCategorySlug = async (slug: string) => {
   try {
-    const { data } = await sanityFetch({
-      query: `*[_type == "product" && references(*[_type == "category" && slug.current == $slug][0]._id)] | order(name asc){
+    const data = await client.fetch(
+      `*[_type == "product" && references(*[_type == "category" && slug.current == $slug][0]._id)] | order(name asc){
         ...,
         "categories": categories[]->title,
         "brand": brand->
       }`,
-      params: { slug },
-    });
+      { slug }
+    );
     return data ?? [];
   } catch (error) {
-    console.error("Error fetching products by category slug", error);
+    logSanityError("Error fetching products by category slug", error);
     return [];
   }
 };
 
 const getProductBySlug = async (slug: string) => {
   try {
-    const product = await sanityFetch({
-      query: PRODUCT_BY_SLUG_QUERY,
-      params: { slug },
-    });
-    return product?.data || null;
+    const product = await client.fetch(PRODUCT_BY_SLUG_QUERY, { slug });
+    return product ?? null;
   } catch (error) {
-    console.error("Error fetching product by ID", error);
+    logSanityError("Error fetching product by ID", error);
     return null;
   }
 };
 
 const getBrand = async (slug: string) => {
   try {
-    const product = await sanityFetch({
-      query: BRAND_QUERY,
-      params: { slug },
-    });
-    return product?.data || null;
+    const product = await client.fetch(BRAND_QUERY, { slug });
+    return product ?? null;
   } catch (error) {
-    console.error("Error fetching product by ID", error);
+    logSanityError("Error fetching product by ID", error);
     return null;
   }
 };

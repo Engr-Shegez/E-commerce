@@ -2,7 +2,6 @@ import {
   Github,
   Instagram,
   Linkedin,
-  Twitch,
   Twitter,
   Youtube,
 } from "lucide-react";

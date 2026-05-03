@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Brand, Category, Product } from "@/sanity.types";
 import { useSearchParams } from "next/navigation";
 import Container from "@/components/common/Container";
@@ -23,7 +23,9 @@ const Shop = ({ categories, brands }: Props) => {
   const priceParams = searchParams?.get("price");
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(
+    categoryParams || null
+  );
   const [selectedBrand, setSelectedBrand] = useState<string | null>(
     brandParams || null
   );
@@ -37,10 +39,9 @@ const Shop = ({ categories, brands }: Props) => {
     setSelectedPrice(null);
   };
 
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     setLoading(true);
     try {
-      // Extract min and max price from selectedPrice
       let minPrice = 0;
       let maxPrice = 1000;
       if (selectedPrice) {
@@ -72,10 +73,11 @@ const Shop = ({ categories, brands }: Props) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedBrand, selectedCategory, selectedPrice]);
+
   useEffect(() => {
     fetchProducts();
-  }, [selectedPrice, selectedBrand, selectedCategory]);
+  }, [fetchProducts]);
 
   return (
     <div className="border-t">

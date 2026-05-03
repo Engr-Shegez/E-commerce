@@ -7,8 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { urlFor } from "@/sanity/lib/image";
 import useCartStore from "@/Store";
-import { useUser } from "@clerk/nextjs";
-import { ArrowLeft, ShoppingBag, ShoppingBagIcon, Trash } from "lucide-react";
+import { ArrowLeft, ShoppingBagIcon, Trash } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
@@ -30,7 +29,6 @@ const CartPageClient = () => {
   } = useCartStore();
   const [loading, setLoading] = useState(false);
   const groupedItems = useCartStore((state) => state.getGroupedItems());
-  const { user } = useUser();
   const [addresses, setAddresses] = useState<Address[] | null>(null);
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);
   const [couponCode, setCouponCode] = useState("");
@@ -317,20 +315,27 @@ const CartPageClient = () => {
                       <div className="mt-4">
                         <h3 className="font-medium mb-2">Delivery Addresses</h3>
                         <RadioGroup
-                          defaultValue={addresses
-                            .find((addr) => addr.default)
-                            ?._id.toString()}
+                          value={selectedAddress?._id.toString()}
+                          onValueChange={(value) => {
+                            const address = addresses.find(
+                              (item) => item._id.toString() === value
+                            );
+                            setSelectedAddress(address || null);
+                          }}
                           className="space-y-2"
                         >
                           {addresses?.map((address: Address) => (
-                            <div key={address?._id}>
+                            <div
+                              key={address?._id}
+                              className="flex items-start gap-2"
+                            >
                               <RadioGroupItem
                                 value={address._id.toString()}
                                 id={`address-${address._id}`}
                               />
                               <Label
-                                htmlFor={`addres-${address._id}`}
-                                className="grid gap-0.5 flex-1/2 text-sm"
+                                htmlFor={`address-${address._id}`}
+                                className="grid gap-0.5 text-sm"
                               >
                                 <span>{address?.name}</span>
                                 <span>
