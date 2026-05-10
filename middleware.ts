@@ -11,9 +11,9 @@ const isProtectedRoute = createRouteMatcher([
 
 export default clerkMiddleware(async (auth, req) => {
   // Allow public access to Sanity Studio
-  // if (req.nextUrl.pathname.startsWith("/admin/studio")) {
-  //   return NextResponse.next();
-  // }
+  if (req.nextUrl.pathname.startsWith("/admin/studio")) {
+    return NextResponse.next();
+  }
 
   const authObject = await auth();
   if (isProtectedRoute(req) && !authObject.userId) {

@@ -17,19 +17,20 @@ const Banner = async () => {
   const banner = await getBanner();
 
   return (
-    <Container className="grid grid-cols-1 lg:grid-cols-4 gap-4 mg:gap-5">
+    <Container className="grid grid-cols-1 lg:grid-cols-4 gap-4 md:gap-5">
       <div className="w-full lg:col-span-3">
         <Carousel className="relative w-full rounded-md overflow-hidden">
           <CarouselContent>
             {banner?.map((item, index) => (
               <CarouselItem key={index}>
-                <div className="relative w-full aspect-[16/9] md:aspect-[21/9]">
+                <div className="relative w-full aspect-[1353/649] bg-white">
                   {item?.image && (
                     <Image
                       src={urlFor(item?.image).url()}
                       alt={`Banner ${index + 1}`}
                       fill
-                      className="object-cover"
+                      sizes="(max-width: 1024px) 100vw, 75vw"
+                      className="object-contain"
                       priority={index === 0}
                     />
                   )}
